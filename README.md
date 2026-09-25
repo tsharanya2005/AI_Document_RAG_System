@@ -170,14 +170,20 @@ For information that is not present in the uploaded document, the application is
 I couldn't find that information in the uploaded document.
 ```
 
-## ⚠️ Limitations
+## 🔍 Approach
 
-* The current application processes one uploaded document at a time.
-* The FAISS index is stored in memory.
-* Chunking uses a basic character-based approach.
-* Scanned or image-only PDFs may not contain extractable text.
-* There is no persistent vector database.
-* Retrieval quality depends on document extraction, chunking, and embedding quality.
+The application follows a Retrieval-Augmented Generation (RAG) pipeline:
+
+1. **PDF Text Extraction** – Extract text from the uploaded PDF page by page using PyPDF.
+2. **Text Chunking** – Split the extracted text into smaller overlapping chunks for efficient retrieval.
+3. **Embedding Generation** – Convert each chunk into a vector representation using the `all-MiniLM-L6-v2` Sentence Transformer model.
+4. **Vector Indexing** – Store the embeddings in a FAISS index for similarity-based search.
+5. **Question Retrieval** – Convert the user's question into an embedding and retrieve the most relevant document chunks.
+6. **Answer Generation** – Pass the retrieved chunks as context to an LLM through the OpenRouter API.
+7. **Source Display** – Show the generated answer along with the relevant document pages, similarity scores, and retrieved text.
+
+The LLM is instructed to use only the retrieved document context and to state when the requested information cannot be found in the document.
+
 
 ## 🔮 Future Improvements
 
